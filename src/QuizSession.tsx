@@ -41,6 +41,25 @@ type Select = {
 
 type Action = Select
 
+function shuffle(array: number[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1))
+    ;[array[i], array[j]] = [array[j], array[i]]
+  }
+}
+
+function randomSelectionsData(idx: number[], dataLength: number) {
+  let result = 0
+  while (true) {
+    const ranVal = Math.floor(Math.random() * dataLength)
+    if (idx.indexOf(ranVal) === -1) {
+      result = ranVal
+      break
+    }
+  }
+  return result
+}
+
 function quizSessionReducer(state: State, action: Action) {
   // TODO
   // 선택한 선지에 따라
@@ -136,12 +155,32 @@ function QuizSession() {
         meaning: 'a. 지속적인, 끈질긴'
       }
     ]
+
+    const quizListData = initialData.map((data, idx) => ({
+      index: idx,
+      text: data.text,
+      answer: data.meaning
+    }))
+    console.log(quizListData)
     // TODO
     // initialData를 State 타입으로 변경 후 리턴한다.
     // quizList[].selections 을 만드는 조건은
     // 해당 단어의 뜻 하나와 다른 단어의 뜻 둘을 포함하여
     // 3지 선다형 뜻 찾기 문제 보기로 변환한다.
     // 아래 데이터는 예시 데이터이므로 삭제.
+
+    const test = initialData.map((data, idx) => {
+      const arr = new Array<number>(2)
+      arr.unshift(idx)
+      const r = arr
+        .filter((data, idx) => idx > 0)
+        .map((data) => randomSelectionsData(arr, initialData.length))
+      console.log(r)
+      return arr
+    })
+
+    console.log(test)
+
     return {
       isCompleted: false,
       correctCount: 0,
