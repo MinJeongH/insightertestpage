@@ -156,10 +156,21 @@ function QuizSession() {
       }
     ]
 
+    const selectionsData = initialData.map((data, idx) => {
+      const arr = [idx]
+      for (let i = 0; i < 2; i++) {
+        arr.push(randomSelectionsData(arr, initialData.length))
+      }
+      shuffle(arr)
+      const result = arr.map((data) => initialData[data].meaning)
+      return result
+    })
+
     const quizListData = initialData.map((data, idx) => ({
       index: idx,
       text: data.text,
-      answer: data.meaning
+      answer: data.meaning,
+      selections: selectionsData[idx]
     }))
     console.log(quizListData)
     // TODO
@@ -169,37 +180,12 @@ function QuizSession() {
     // 3지 선다형 뜻 찾기 문제 보기로 변환한다.
     // 아래 데이터는 예시 데이터이므로 삭제.
 
-    const test = initialData.map((data, idx) => {
-      const arr = new Array<number>(2)
-      arr.unshift(idx)
-      const r = arr
-        .filter((data, idx) => idx > 0)
-        .map((data) => randomSelectionsData(arr, initialData.length))
-      console.log(r)
-      return arr
-    })
-
-    console.log(test)
-
     return {
       isCompleted: false,
       correctCount: 0,
       inCorrectCount: 0,
       currentIndex: 0,
-      quizList: [
-        {
-          index: 0,
-          text: 'apple',
-          answer: 'n. 사과',
-          selections: ['n. 사과', 'n. 밀가루 반죽']
-        },
-        {
-          index: 1,
-          text: 'brick',
-          answer: 'n. 벽돌',
-          selections: ['n. 벽돌', 'v. 뛰다, 급증하다']
-        }
-      ],
+      quizList: quizListData,
       quizResults: []
     }
   }
