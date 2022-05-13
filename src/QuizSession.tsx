@@ -48,16 +48,11 @@ function shuffle(array: number[]) {
   }
 }
 
-function randomSelectionsData(idx: number[], dataLength: number) {
-  let result = 0
+function randomSelect(maximum: number, ignoreValues: number[], minimum: number = 0) {
   while (true) {
-    const ranVal = Math.floor(Math.random() * dataLength)
-    if (idx.indexOf(ranVal) === -1) {
-      result = ranVal
-      break
-    }
+    const ranVal = Math.floor(Math.random() * (maximum - minimum)) + minimum
+    if (ignoreValues.indexOf(ranVal) === -1) return ranVal
   }
-  return result
 }
 
 function quizSessionReducer(state: State, action: Action) {
@@ -159,11 +154,10 @@ function QuizSession() {
     const selectionsData = initialData.map((data, idx) => {
       const arr = [idx]
       for (let i = 0; i < 2; i++) {
-        arr.push(randomSelectionsData(arr, initialData.length))
+        arr.push(randomSelect(initialData.length, arr))
       }
       shuffle(arr)
-      const result = arr.map((data) => initialData[data].meaning)
-      return result
+      return arr.map((data) => initialData[data].meaning)
     })
 
     const quizListData = initialData.map((data, idx) => ({
@@ -173,6 +167,7 @@ function QuizSession() {
       selections: selectionsData[idx]
     }))
     console.log(quizListData)
+
     // TODO
     // initialData를 State 타입으로 변경 후 리턴한다.
     // quizList[].selections 을 만드는 조건은
