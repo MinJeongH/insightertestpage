@@ -48,7 +48,7 @@ function shuffle(array: number[]) {
   }
 }
 
-function randomSelect(maximum: number, ignoreValues: number[], minimum: number = 0) {
+function getRandomNumber(maximum: number, ignoreValues: number[], minimum: number = 0) {
   while (true) {
     const ranVal = Math.floor(Math.random() * (maximum - minimum)) + minimum
     if (ignoreValues.indexOf(ranVal) === -1) return ranVal
@@ -63,6 +63,20 @@ function quizSessionReducer(state: State, action: Action) {
   // 맞은 혹은 틀린 개수가 업데이트 되고,
   // 다음 퀴즈로 넘어가야 함.
   const newState = { ...state }
+  const { quizIndex, selected } = action.payload
+  if (action.type === 'SELECT') {
+    state.quizResults[quizIndex] = {
+      createdAt: new Date(),
+      quizIndex: quizIndex,
+      answer: state.quizList[quizIndex].answer,
+      selected: selected,
+      isCorrect: selected === state.quizList[quizIndex].answer ? true : false
+    }
+    if (state.quizResults[quizIndex].isCorrect) newState.correctCount++
+    else newState.inCorrectCount++
+    newState.currentIndex++
+    if (quizIndex === state.quizList.length - 1) newState.isCompleted = true
+  }
   return newState
 }
 
@@ -151,13 +165,20 @@ function QuizSession() {
       }
     ]
 
+    // TODO
+    // initialData를 State 타입으로 변경 후 리턴한다.
+    // quizList[].selections 을 만드는 조건은
+    // 해당 단어의 뜻 하나와 다른 단어의 뜻 둘을 포함하여
+    // 3지 선다형 뜻 찾기 문제 보기로 변환한다.
+    // 아래 데이터는 예시 데이터이므로 삭제.
+
     const selectionsData = initialData.map((data, idx) => {
-      const arr = [idx]
+      const selectionsDataIndex = [idx]
       for (let i = 0; i < 2; i++) {
-        arr.push(randomSelect(initialData.length, arr))
+        selectionsDataIndex.push(getRandomNumber(initialData.length, selectionsDataIndex))
       }
-      shuffle(arr)
-      return arr.map((data) => initialData[data].meaning)
+      shuffle(selectionsDataIndex)
+      return selectionsDataIndex.map((data) => initialData[data].meaning)
     })
 
     const quizListData = initialData.map((data, idx) => ({
@@ -168,20 +189,24 @@ function QuizSession() {
     }))
     console.log(quizListData)
 
-    // TODO
-    // initialData를 State 타입으로 변경 후 리턴한다.
-    // quizList[].selections 을 만드는 조건은
-    // 해당 단어의 뜻 하나와 다른 단어의 뜻 둘을 포함하여
-    // 3지 선다형 뜻 찾기 문제 보기로 변환한다.
-    // 아래 데이터는 예시 데이터이므로 삭제.
-
     return {
       isCompleted: false,
       correctCount: 0,
       inCorrectCount: 0,
       currentIndex: 0,
       quizList: quizListData,
-      quizResults: []
+      quizResults: [
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
+        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false }
+      ]
     }
   }
 
