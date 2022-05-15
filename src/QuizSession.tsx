@@ -41,6 +41,11 @@ type Select = {
 
 type Action = Select
 
+/**
+ * 전달받은 배열의 원소 배치를 무작위로 섞어서 반환
+ * @param {number[]} array
+ * @returns {number[]} 원소 배치를 변경한 배열
+ */
 function shuffle(array: number[]) {
   for (let i = array.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1))
@@ -48,6 +53,13 @@ function shuffle(array: number[]) {
   }
 }
 
+/**
+ * 최대, 최소값 사이의 랜덤값을 전달받은 배열의 값과 비교하여 중복되지 않으면 반환
+ * @param {number} maximum
+ * @param {number} minimum
+ * @param {number[]} ignoreValue
+ * @returns {number} ignoreValue와 중복되지 않는 랜덤값
+ */
 function getRandomNumber(maximum: number, ignoreValues: number[], minimum: number = 0) {
   while (true) {
     const ranVal = Math.floor(Math.random() * (maximum - minimum)) + minimum
@@ -62,16 +74,20 @@ function quizSessionReducer(state: State, action: Action) {
   // 예를 들어, 퀴즈 결과가 생성되고
   // 맞은 혹은 틀린 개수가 업데이트 되고,
   // 다음 퀴즈로 넘어가야 함.
+
   const newState = { ...state }
   const { quizIndex, selected } = action.payload
   if (action.type === 'SELECT') {
-    state.quizResults[quizIndex] = {
+    //반환할 state의 quizResults 업데이트
+    newState.quizResults[quizIndex] = {
       createdAt: new Date(),
       quizIndex: quizIndex,
       answer: state.quizList[quizIndex].answer,
       selected: selected,
       isCorrect: selected === state.quizList[quizIndex].answer ? true : false
     }
+
+    // quizResults에 따른 state 업데이트
     if (state.quizResults[quizIndex].isCorrect) newState.correctCount++
     else newState.inCorrectCount++
     newState.currentIndex++
@@ -172,6 +188,7 @@ function QuizSession() {
     // 3지 선다형 뜻 찾기 문제 보기로 변환한다.
     // 아래 데이터는 예시 데이터이므로 삭제.
 
+    //quizList[].selections를 지정합니다.
     const selectionsData = initialData.map((data, idx) => {
       const selectionsDataIndex = [idx]
       for (let i = 0; i < 2; i++) {
@@ -181,32 +198,28 @@ function QuizSession() {
       return selectionsDataIndex.map((data) => initialData[data].meaning)
     })
 
+    //initialData를 위의 selectionsData와 함께 quizListData라는 State 타입으로 변경합니다.
     const quizListData = initialData.map((data, idx) => ({
       index: idx,
       text: data.text,
       answer: data.meaning,
       selections: selectionsData[idx]
     }))
-    console.log(quizListData)
 
+    //quizList는 quizListData, quizResults는 QuizResults 타입으로 변경
     return {
       isCompleted: false,
       correctCount: 0,
       inCorrectCount: 0,
       currentIndex: 0,
       quizList: quizListData,
-      quizResults: [
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false },
-        { quizIndex: 0, createdAt: new Date(), answer: '', selected: '', isCorrect: false }
-      ]
+      quizResults: new Array(quizListData.length).fill({
+        quizIndex: 0,
+        createdAt: new Date(),
+        answer: '',
+        selected: '',
+        isCorrect: false
+      })
     }
   }
 
