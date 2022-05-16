@@ -106,14 +106,17 @@ function QuizSessionView(
 ) {
   const articleStyle = {
     marginTop: '16px',
-    padding: '8px',
+    padding: '12px',
     background: '#efefef'
   }
 
   function QuizView(quiz: Quiz) {
     return (
-      <article style={articleStyle}>
-        <header>{quiz.text}</header>
+      <article className='quiz_view' style={articleStyle}>
+        <header>
+          <p>단어</p>
+          <h1>{quiz.text}</h1>
+        </header>
         {quiz.selections.map((sel, idx) => (
           <button key={idx} onClick={() => onClick(sel)}>
             {sel}
@@ -124,20 +127,18 @@ function QuizSessionView(
   }
   function QuizResultView(quizResults: QuizResult[]) {
     return (
-      <>
-        <article style={articleStyle}>
-          {quizResults.map((data, idx) => {
-            return (
-              <div className='quiz_result'>
-                <div className='index'>{data.quizIndex + 1}번째 문제</div>
-                <div className='selected'>선택한 답 : {data.selected}</div>
-                <div className='answer'>정답 : {data.answer}</div>
-                <div className='isCorrect'>{data.isCorrect ? '정답' : '오답'}</div>
-              </div>
-            )
-          })}
-        </article>
-      </>
+      <article className='quiz_results' style={articleStyle}>
+        {quizResults.map((data, idx) => {
+          return (
+            <div className={`result ${data.isCorrect ? 'corrected' : 'iscorrected'}`}>
+              <div className='index'>{data.quizIndex + 1}번째 문제</div>
+              <div className='selected'>선택한 답 : {data.selected}</div>
+              <div className='answer'>정답 : {data.answer}</div>
+              <div className='isCorrect'>{data.isCorrect ? '정답' : '오답'}</div>
+            </div>
+          )
+        })}
+      </article>
     )
   }
 
@@ -145,17 +146,23 @@ function QuizSessionView(
   const currentQuizResult = state.quizResults
 
   return (
-    <section>
-      <div>완료 여부: {state.isCompleted ? '완료' : '미완료'}</div>
-      <div>맞은 개수 {state.correctCount}</div>
-      <div>틀린 개수 {state.inCorrectCount}</div>
+    <section className='quiz_state_check'>
+      <div className='is_completed'>
+        {state.isCompleted
+          ? '문제풀이 완료'
+          : `문제 풀이 중 : ${state.currentIndex} / ${state.quizList.length}`}
+      </div>
+      <div className='is_corrected'>
+        <div className='correct'>맞은 개수 : {state.correctCount}</div>
+        <div className='incorrect'>틀린 개수 : {state.inCorrectCount}</div>
+      </div>
       {state.isCompleted ? (
         <>
-          <Link to='/'>홈으로</Link>
-          <button onClick={() => setClickQuizResultView((prev) => !prev)}>
+          <button className='result_btn' onClick={() => setClickQuizResultView((prev) => !prev)}>
             {clickQuizResultView ? '결과 닫기' : '결과 보기'}
           </button>
           {clickQuizResultView && QuizResultView(currentQuizResult)}
+          <Link to='/'>홈으로</Link>
         </>
       ) : (
         QuizView(currentQuiz)

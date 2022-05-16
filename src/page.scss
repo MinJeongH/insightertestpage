@@ -56,6 +56,106 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  .quiz_state_check {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .is_completed {
+      font-size: 22px;
+      margin: 10px 0;
+    }
+    .is_corrected {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin: 10px 0;
+      font-size: 20px;
+      .correct {
+        color: #62acbc;
+        margin-right: 20px;
+      }
+      .incorrect {
+        color: #eb574c;
+      }
+    }
+    .quiz_view {
+      width: 550px;
+      height: 150px;
+      header {
+        display: flex;
+        p {
+          margin: 5px 10px;
+        }
+        h1 {
+          margin: 40px 40px 35px 40px;
+          font-size: 25px;
+        }
+      }
+      button {
+        box-sizing: border-box;
+        padding: 10px 15px;
+        margin: 5px 10px;
+        font-size: 18px;
+        border: 1px solid #62acbc;
+        border-radius: 5px;
+        transition: all 200ms ease-in-out;
+        &:active {
+          background-color: #62acbc;
+          color: white;
+        }
+      }
+    }
+    .result_btn,
+    a {
+      display: block;
+      padding: 8px;
+      width: 80%;
+      text-decoration: none;
+      font-size: 16px;
+      border-radius: 5px;
+      transition: all 200ms ease-in-out;
+      box-sizing: border-box;
+      &:active {
+        transform: scale(0.9);
+      }
+    }
+    .result_btn {
+      color: #62acbc;
+      background-color: white;
+      border: 1px solid #62acbc;
+      margin: 10px 0;
+      &:active {
+        background-color: #62acbc;
+        color: white;
+      }
+    }
+    a {
+      color: white;
+      background-color: #62acbc;
+      margin: 10px 0 20px 0;
+    }
+    .quiz_results {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      margin: 10px 0;
+      .result {
+        margin: 10px 0;
+        border-radius: 5px;
+        box-sizing: border-box;
+        padding: 10px 20px;
+        &.corrected {
+          border: 1px solid #54ab70;
+          background-color: #f4fbf6;
+        }
+        &.iscorrected {
+          border: 1px solid #eb574c;
+          background-color: #fff4f4;
+        }
+      }
+    }
+  }
   .spinner {
     width: 4em;
     height: 4em;
