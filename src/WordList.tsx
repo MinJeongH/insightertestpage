@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import './page.scss'
 
 interface Word {
   text: string
@@ -9,8 +10,9 @@ interface Word {
 
 function WordView(word: Word) {
   return (
-    <div key={word.text}>
-      {word.text} / {word.meaning}
+    <div className='word' key={word.text}>
+      <p className='text'>단어 : {word.text}</p>
+      <p className='meaning'>뜻 : {word.meaning}</p>
     </div>
   )
 }
@@ -19,7 +21,13 @@ function WordList() {
   const [fetchedData, setFetchedData] = useState<AxiosResponse<any, any>>()
   const linkStyle = {
     display: 'block',
-    padding: '8px'
+    padding: '8px',
+    textDecoration: 'none',
+    color: 'white',
+    backgroundColor: '#62acbc',
+    width: '60%',
+    borderRadius: '5px',
+    transition: 'all 200ms ease-in-out'
   }
 
   // TODO
@@ -36,6 +44,7 @@ function WordList() {
     { text: 'leap', meaning: 'v. 뛰다, 급증하다' }
   ]
 
+  //webpack에서 지원하는 procxy 사용하여 CORS 에러 해결
   useEffect(() => {
     const getData = async () => {
       const data = await axios.get('/vocabs.json')
@@ -45,10 +54,14 @@ function WordList() {
   }, [])
 
   return (
-    <section>
-      {fetchedData
-        ? fetchedData.data.map((word: Word) => WordView(word))
-        : wordlist.map((word) => WordView(word))}
+    <section className='word_list'>
+      <h1>단어 목록</h1>
+      <div className='words'>
+        {fetchedData
+          ? fetchedData.data.map((word: Word) => WordView(word))
+          : wordlist.map((word) => WordView(word))}
+      </div>
+
       <Link to='/' style={linkStyle}>
         홈으로
       </Link>

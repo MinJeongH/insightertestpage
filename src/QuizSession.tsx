@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import './page.scss'
 
 // State
 type Quiz = {
@@ -97,35 +98,68 @@ function quizSessionReducer(state: State, action: Action) {
 }
 
 // View
-function QuizSessionView(state: State, onClick: (selected: string) => void) {
+function QuizSessionView(
+  state: State,
+  onClick: (selected: string) => void,
+  clickQuizResultView: boolean,
+  setClickQuizResultView: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  const articleStyle = {
+    marginTop: '16px',
+    padding: '8px',
+    background: '#efefef'
+  }
+
   function QuizView(quiz: Quiz) {
-    const articleStyle = {
-      marginTop: '16px',
-      padding: '8px',
-      background: '#efefef'
-    }
     return (
       <article style={articleStyle}>
         <header>{quiz.text}</header>
-        {quiz.selections.map((sel, idx) => {
-          return (
-            <button key={idx} onClick={() => onClick(sel)}>
-              {sel}
-            </button>
-          )
-        })}
+        {quiz.selections.map((sel, idx) => (
+          <button key={idx} onClick={() => onClick(sel)}>
+            {sel}
+          </button>
+        ))}
       </article>
+    )
+  }
+  function QuizResultView(quizResults: QuizResult[]) {
+    return (
+      <>
+        <article style={articleStyle}>
+          {quizResults.map((data, idx) => {
+            return (
+              <div className='quiz_result'>
+                <div className='index'>{data.quizIndex + 1}번째 문제</div>
+                <div className='selected'>선택한 답 : {data.selected}</div>
+                <div className='answer'>정답 : {data.answer}</div>
+                <div className='isCorrect'>{data.isCorrect ? '정답' : '오답'}</div>
+              </div>
+            )
+          })}
+        </article>
+      </>
     )
   }
 
   const currentQuiz = state.quizList[state.currentIndex]
+  const currentQuizResult = state.quizResults
 
   return (
     <section>
       <div>완료 여부: {state.isCompleted ? '완료' : '미완료'}</div>
       <div>맞은 개수 {state.correctCount}</div>
       <div>틀린 개수 {state.inCorrectCount}</div>
-      {state.isCompleted ? <Link to='/'>홈으로</Link> : QuizView(currentQuiz)}
+      {state.isCompleted ? (
+        <>
+          <Link to='/'>홈으로</Link>
+          <button onClick={() => setClickQuizResultView((prev) => !prev)}>
+            {clickQuizResultView ? '결과 닫기' : '결과 보기'}
+          </button>
+          {clickQuizResultView && QuizResultView(currentQuizResult)}
+        </>
+      ) : (
+        QuizView(currentQuiz)
+      )}
     </section>
   )
 }
@@ -133,6 +167,7 @@ function QuizSessionView(state: State, onClick: (selected: string) => void) {
 function QuizSession() {
   const [initalLoaded, setInitalLoaded] = useState(false)
   const [state, setState] = useState<State | null>(null)
+  const [clickQuizResultView, setClickQuizResultView] = useState(false)
 
   const initState: () => Promise<State> = async () => {
     // 임시로 1초간 타임 아웃.
@@ -247,7 +282,13 @@ function QuizSession() {
     setState(newState)
   }
 
-  return <div>{state ? QuizSessionView(state, quizSelected) : '로딩중...'}</div>
+  return (
+    <div>
+      {state
+        ? QuizSessionView(state, quizSelected, clickQuizResultView, setClickQuizResultView)
+        : '로딩중...'}
+    </div>
+  )
 }
 
 export default QuizSession
