@@ -283,10 +283,15 @@ function QuizSession() {
   }
 
   return (
-    <div>
-      {state
-        ? QuizSessionView(state, quizSelected, clickQuizResultView, setClickQuizResultView)
-        : '로딩중...'}
+    <div className='quiz_session'>
+      {state ? (
+        QuizSessionView(state, quizSelected, clickQuizResultView, setClickQuizResultView)
+      ) : (
+        <>
+          <div className='spinner'></div>
+          <p className='loading'>로딩중...</p>
+        </>
+      )}
     </div>
   )
 }
